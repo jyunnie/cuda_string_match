@@ -73,27 +73,5 @@ void calculation()
   fclose(fp);
 }
 
-}
-// Launch a search keyword kernel on the GPU with one thread for each element.
-searchKeywordKernel<<<1, DATASIZE>>>(dev_result, dev_data, dev_keyword);
-// cudaDeviceSynchronize waits for the kernel to finish, and returns
-// any errors encountered during the launch.
-cudaStatus = cudaDeviceSynchronize();
-if (cudaStatus != cudaSuccess) {
-  fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching addKernel!\n", cudaStatus);
-  goto Error;
-}
-// Copy result from GPU buffer to host memory.
-cudaStatus = cudaMemcpy(result, dev_result, DATASIZE * sizeof(int), cudaMemcpyDeviceToHost);
-if (cudaStatus != cudaSuccess) {
-  fprintf(stderr, "cudaMemcpy failed!");
-  goto Error;
-}
-Error:
- cudaFree(dev_result);
- cudaFree(dev_data);
- cudaFree(dev_keyword);
- 
- return cudaStatus;
- 
-}
+
+
