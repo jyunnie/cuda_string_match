@@ -74,8 +74,8 @@ void cuda_init(){
 void calculation()
 {
   int deviceCount;
-  dim3 grid(16,2);
-  dim3 threads(8,8);
+  dim3 grid(4096);
+  dim3 threads(256);
   
   cudaGetDevice(&deviceCount);
   cudaMemset(cuda_lines,0,obj_size);
@@ -106,11 +106,32 @@ void cleanup()
 	cudaFree(cudaoutput);
 }
 
-__global__ void calculation(char *cuda_lines,char *cuda_wholedb,char cuda_output)
+__global__ void calculation(const char *substr,int len,int substrlen)
 {
 
   unsigned int x = blockIdx.x*blockDim.x + threadIdx.x;
-  unsigned int y = blockIdx.y*blockDim.y + threadIdx.y;
+  const* char s1 = s; //text in device memory;
+  const* char s2 = substr;//input text
+  unsigned int yes = 1;
+  int curr_marker = 0;
+
+  if((len - shft)<substrlen)
+  {
+	res[shft]=0;
+	return;
+   }
+	//scan the text in device memory,attempt to match pattern
+   for(int i=shft;curr_marker <= substrlen && i<len;curr_marker++,i++){
+	if(s2[curr_marker] && (s2[curr_marker]!=s1[i])){
+		yes = 0;
+		break;
+	}
+    }
+
+   if(yes==1)
+	res[shft] = yes;
+}
+
 
 
 
